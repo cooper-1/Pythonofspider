@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
+    <data-source source="LOCAL" name="http_cache" uuid="70c232ff-72bb-4725-b98a-3184fb7b9ed1">
+      <driver-ref>sqlite.xerial</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
+      <jdbc-url>jdbc:sqlite:D:\工具软件\python3.8\Python网络爬虫从入门到实践\第6章\http_cache.sqlite</jdbc-url>
+    </data-source>
+  </component>
+</project>
