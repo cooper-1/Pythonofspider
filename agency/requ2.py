@@ -10,7 +10,6 @@ from requests_html import HTMLSession
 from fake_useragent import UserAgent
 
 i = 0
-
 location = os.getcwd() + '/fake_useragent_0.1.11.json'
 
 
@@ -23,12 +22,13 @@ def getlist(url):
         session = HTMLSession()  # 创建HTML会话对象
         header = {'useragent': UserAgent(path=location).random}
         res = session.get(url, headers=header, timeout=20)
+        res.encoding = 'gb2312'
+        print('第 %s 次·网络状态码: ' % i, res.status_code)
         if res.status_code == 200:
-            print('第 %s 次·网络状态码: ' % i, res.status_code)
             # print(res.content)
             end = time.time()
             print('爬取时间为：' + str(end - start))
-            return res.content
+            return res
         else:
             raise Exception('不给访问')
 

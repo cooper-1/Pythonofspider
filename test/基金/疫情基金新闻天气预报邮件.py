@@ -21,7 +21,7 @@ from lxml import etree
 import datetime
 
 i = 0
-j = 0
+j = 1
 
 startTime = strftime("%Y-%m-%d", localtime())
 
@@ -48,49 +48,10 @@ user_agent_list = [ \
 ]
 
 
-def getlist(url):
-    # 爬取天气预报
-    try:
-        global i
-        i = i + 1
-        ctime = strftime("%Y-%m-%d", localtime())
-        header = {'User-Agent': random.choice(user_agent_list)}  # 随机选一个user-agent
-        res = requests.get(url, headers=header, timeout=20)
-        print('第%s轮，getlist·网络状态码: ' % i, res.status_code, url)
-        # print(res.content.decode('utf-8'))
-
-        pattern = re.compile('<ul class="t clearfix">(.*?)</ul>', re.S)  # <img class="" src=
-        result = pattern.findall(res.content.decode('utf-8'))
-        path = os.getcwd() + '\\天气预报'
-        if not os.path.exists(path):
-            print(path)
-            os.makedirs(path)
-            print('目录创建成功')
-        with open(path + '/%s.txt' % ctime, 'a+', encoding='utf-8') as fp:
-            fp.write(ctime)
-            fp.write(result[0])
-            print('天气预报写入成功')
-
-        # 爬取疫情新闻
-        epidemic = ''.join(getlist3('https://ncov.dxy.cn/ncovh5/view/pneumonia'))
-        sendmail('<ul class="t clearfix">' + result[0] + '</ul>' + ''.join(epidemic))
-
-    except HTTPError:
-        print('httperror')
-    except RequestException:
-        print('reqerror')
-    except ReadTimeout:
-        print('time out')
-    except Exception as e:
-        print(e)
-        getlist1()
-        getlist(url='http://www.weather.com.cn/weather/101281201.shtml')
-
-
 def sendmail(result):
     # 请自行修改下面的邮件发送者和接收者
     global j
-    j += 1
+
     sender = "yx1274814498@163.com"  # 发送方地址
     receivers = ['yx1274814498@163.com', '1274814498@qq.com', '1506262492@qq.com', '1651122140@qq.com',
                  '763184952@qq.com',
@@ -104,10 +65,11 @@ def sendmail(result):
     smtper = smtplib.SMTP_SSL('smtp.163.com', 465)
     message = MIMEMultipart('related')
     message['Subject'] = 'Cooper’s Jarvis'
-    news = getlist4()
+    # 爬取人民日报
+    news = getlist5()
 
     # 爬取基金信息
-    jj, name = getlist5('http://fund.eastmoney.com/161725.html?spm=search')
+    jj, name = getlist6('http://fund.eastmoney.com/161725.html?spm=search')
     ctime = strftime("%Y-%m-%d", localtime())
     msgtext = MIMEText(
         '<!DOCTYPE html> <html> <head> <meta charset="utf-8" /> <title>闰京的消息</title> </head> <body><font size=10>'
@@ -117,7 +79,7 @@ def sendmail(result):
     # 粘贴图片
     message.attach(msgtext)
     path = os.getcwd() + '\\每日图片'
-    filename = path + '/%s.jpg' % ctime
+    filename = path + '/%s-%s.jpg' % (ctime, j)
 
     fp = open(filename, 'rb')
     msgImage = MIMEImage(fp.read())
@@ -139,7 +101,7 @@ def sendmail(result):
     # smtper.starttls()
     smtper.login(sender, "SBMMBSAHCMPDUOWC")  # 此处secretpass输入授权码
 
-    # 发送邮件
+    # 发送邮件，测试时注释掉
     smtper.sendmail(sender, receivers, message.as_string())
     before = time.strptime(startTime, "%Y-%m-%d")
     today = datetime.date.today()
@@ -147,6 +109,7 @@ def sendmail(result):
             (today - datetime.date(*before[:3])).days + 1) + '总共发送了%s封邮件' % j)
     print('邮件发送完成!')
     smtper.quit()
+    j += 1
 
 
 def getlist1(url='https://search.bilibili.com/article?keyword=p%E7%AB%99'):
@@ -156,7 +119,7 @@ def getlist1(url='https://search.bilibili.com/article?keyword=p%E7%AB%99'):
         i = i + 1
         header = {'User-Agent': random.choice(user_agent_list)}  # 随机选一个user-agent
         res = requests.get(url, headers=header, timeout=20)
-        print('第%s轮·getlist1·下载图片·第一次网络状态码: ' % i, res.status_code)
+        print('第%s轮·getlist1·获取图片集列表·第一次网络状态码:' % i, res.status_code)
         # print(res.content.decode('utf-8'))
         pattern = re.compile('<li class="article-item"><a href="(.*?)" title=', re.S)  # <img class="" src=
         result = pattern.findall(res.content.decode('utf-8'))
@@ -164,7 +127,7 @@ def getlist1(url='https://search.bilibili.com/article?keyword=p%E7%AB%99'):
         # print(random.choice(result))
         url2 = (random.choice(result))
         url2 = 'https:' + url2
-        print('url==', url2)
+        print('url = ', url2)
         getlist2(url2)
 
     except HTTPError:
@@ -184,7 +147,7 @@ def getlist2(url):
     ctime = strftime("%Y-%m-%d", localtime())
     header = {'User-Agent': random.choice(user_agent_list)}  # 随机选一个user-agent
     res = requests.get(url, headers=header, timeout=10)
-    print('第%s轮·getlist2·下载图片· 第二网络状态码：' % i, res.status_code)
+    print('第%s轮·getlist2·下载图片· 第二网络状态码:' % i, res.status_code)
     pattern = re.compile('img data-src="(.*?)"', re.S)  # class="preview" href=
     result = pattern.findall(res.text)
     # print('result===', result)
@@ -192,7 +155,7 @@ def getlist2(url):
     for url2 in result:
         list2.append('https:' + url2)
     # print(list2)
-    print(random.choice(list2))
+    # print(random.choice(list2))
     url2 = random.choice(list2)
     path = os.getcwd() + '\\每日图片'
     if not os.path.exists(path):
@@ -200,13 +163,52 @@ def getlist2(url):
         os.makedirs(path)
         print('目录创建成功')
     # print(path)
-    with open(path + '/%s.jpg' % ctime, 'wb') as f:
+    with open(path + '/%s-%s.jpg' % (ctime, j), 'wb') as f:
         f.write(requests.get(url2, headers=header, timeout=10).content)
-        print('第%s次准备保存图片·' % i, url2)
+        print('第%s次保存图片完成·' % j, url2)
 
 
 def getlist3(url):
-    # 爬取疫情
+    # 爬取天气预报
+    try:
+        global i
+        i = i + 1
+        ctime = strftime("%Y-%m-%d", localtime())
+        header = {'User-Agent': random.choice(user_agent_list)}  # 随机选一个user-agent
+        res = requests.get(url, headers=header, timeout=20)
+        print('第%s轮，getlist3·网络状态码:' % i, res.status_code, url)
+        # print(res.content.decode('utf-8'))
+
+        pattern = re.compile('<ul class="t clearfix">(.*?)</ul>', re.S)  # <img class="" src=
+        result = pattern.findall(res.content.decode('utf-8'))
+        path = os.getcwd() + '\\天气预报'
+        if not os.path.exists(path):
+            print(path)
+            os.makedirs(path)
+            print('目录创建成功')
+        with open(path + '/%s.txt' % ctime, 'a+', encoding='utf-8') as fp:
+            fp.write(ctime)
+            fp.write(result[0])
+            print('天气预报写入成功')
+
+        # 爬取疫情新闻
+        epidemic = ''.join(getlist4('https://ncov.dxy.cn/ncovh5/view/pneumonia'))
+        sendmail('<ul class="t clearfix">' + result[0] + '</ul>' + ''.join(epidemic))
+
+    except HTTPError:
+        print('httperror')
+    except RequestException:
+        print('reqerror')
+    except ReadTimeout:
+        print('time out')
+    except Exception as e:
+        print(e)
+        getlist1()
+        getlist3(url='http://www.weather.com.cn/weather/101281201.shtml')
+
+
+def getlist4(url):
+    # 爬取疫情新闻数据
     try:
         global i
         i = i + 1
@@ -214,7 +216,7 @@ def getlist3(url):
         # print(ctime)
         header = {'User-Agent': random.choice(user_agent_list)}  # 随机选一个user-agent
         res = requests.get(url, headers=header, timeout=10)
-        print('第%s轮，getlist3·网络状态码： ' % i, res.status_code)
+        print('第%s轮，getlist4·网络状态码:' % i, res.status_code)
         # print(res.content)
 
         pattern2 = re.compile(',"pubDateStr":"(.*?),"infoSource":"央视新闻app","sourceUrl":', re.S)  # 综合得分
@@ -247,16 +249,16 @@ def getlist3(url):
         print(e)
 
 
-def getlist4():
+def getlist5():
     # 爬取人民日报
     ctime = strftime("%Y-%m/%d", localtime())
-    print(ctime)
+    # print(ctime)
     url = 'http://paper.people.com.cn/rmrb/html/{}/nbs.D110000renmrb_01.htm'.format(ctime)
     global i
     i += 1
     header = {'User-Agent': random.choice(user_agent_list)}  # 随机选一个user-agent
     res = requests.get(url, headers=header, timeout=20)
-    print('第%s轮，getlist4·网络状态码: ' % i, res.status_code)
+    print('第%s轮，getlist5·网络状态码:' % i, res.status_code)
     html = etree.HTML(res.content)
     result = html.xpath('//div/ul/li/a/text()')
     # print(result)
@@ -275,7 +277,7 @@ def getlist4():
     return '<br />'.join(result)  # 换行
 
 
-def getlist5(url):
+def getlist6(url):
     # 爬取基金信息
     try:
         global i
@@ -283,7 +285,7 @@ def getlist5(url):
         ctime = strftime("%Y-%m-%d", localtime())
         header = {'User-Agent': random.choice(user_agent_list)}  # 随机选一个user-agent
         res = requests.get(url, headers=header, timeout=20)
-        print('第%s轮，getlist6·网络状态码: ' % i, res.status_code, url)
+        print('第%s轮，getlist6·网络状态码:' % i, res.status_code, url)
         res = res.content.decode('utf-8')
         # 基金涨跌
         pattern = re.compile('<div class="poptableWrap singleStyleHeight01">(.*?)<div class="poptableWrap_', re.S)
@@ -346,13 +348,13 @@ if __name__ == "__main__":
     url = 'http://www.weather.com.cn/weather/101280206.shtml'  # 仁化
     # url = 'http://www.weather.com.cn/weather/101280201.shtml'韶关
 
-    schedule.every().day.at("07:33").do(getlist, url)
-    schedule.every().day.at("12:33").do(getlist, url)
-    schedule.every().day.at("15:03").do(getlist, url)
+    schedule.every().day.at("07:33").do(getlist3, url)
+    schedule.every().day.at("12:33").do(getlist3, url)
+    schedule.every().day.at("15:03").do(getlist3, url)
 
     # 测试时使用，正式使用则注释掉
     # getlist1()
-    # getlist(url)
+    # getlist3(url)
 
     while True:
         schedule.run_pending()
