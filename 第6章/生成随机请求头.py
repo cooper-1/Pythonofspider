@@ -25,7 +25,7 @@ r = session.get(url, headers=headers)
 if r.status_code == 200:
     print(r.text)
 # (Macintosh; Intel Mac OS X 10_12_6)
-# like Gecko) Chrome/37.0.2049.0 Safari/537.36", like Gecko) Chrome/37.0.2049.0 Safari/537.36",
+# .NET CLR 3.0.4506.2152; .NET CLR 3.5.30729; .NET CLR 2.0.50727) 3gpp-gba UNTRUSTED/1.0
 ua = UserAgent(path=location)
 #  'D:/BaiduNetdiskDownload/hello/venv/fake_useragent_0.1.11.json'   文件路径
 # ie浏览器的user agent

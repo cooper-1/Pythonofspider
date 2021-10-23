@@ -10,9 +10,11 @@ from requests_html import HTMLSession
 from fake_useragent import UserAgent
 
 i = 0
-location = os.getcwd() + '/fake_useragent_0.1.11.json'
+# location = os.getcwd() + '/fake_useragent_0.1.11.json'
+location = r'D:\工具软件\python3.8\Python网络爬虫从入门到实践\agency' + '/fake_useragent_0.1.11.json'
+print(location)
 
-
+# ua = UserAgent(use_cache_server=False)
 def getlist(url):
     # 获取列表URL
     try:
@@ -20,7 +22,7 @@ def getlist(url):
         i += 1
         start = time.time()
         session = HTMLSession()  # 创建HTML会话对象
-        header = {'useragent': UserAgent(path=location).random}
+        header = {'Useragent': UserAgent(path=location,verify_ssl=False).random}
         res = session.get(url, headers=header, timeout=20)
         res.encoding = 'gb2312'
         print('第 %s 次·网络状态码: ' % i, res.status_code)
@@ -28,7 +30,10 @@ def getlist(url):
             # print(res.content)
             end = time.time()
             print('爬取时间为：' + str(end - start))
-            return res
+            if res:
+                return res
+            else:
+                raise Exception('爬取错误')
         else:
             raise Exception('不给访问')
 

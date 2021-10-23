@@ -119,7 +119,7 @@ def getlist1(url='https://search.bilibili.com/article?keyword=p%E7%AB%99'):
         i = i + 1
         header = {'User-Agent': random.choice(user_agent_list)}  # 随机选一个user-agent
         res = requests.get(url, headers=header, timeout=20)
-        print('第%s轮·getlist1·获取图片集列表·第一次网络状态码:' % i, res.status_code)
+        print('第%s轮，getlist1·获取图片集列表·第一次网络状态码:' % i, res.status_code)
         # print(res.content.decode('utf-8'))
         pattern = re.compile('<li class="article-item"><a href="(.*?)" title=', re.S)  # <img class="" src=
         result = pattern.findall(res.content.decode('utf-8'))
@@ -147,7 +147,7 @@ def getlist2(url):
     ctime = strftime("%Y-%m-%d", localtime())
     header = {'User-Agent': random.choice(user_agent_list)}  # 随机选一个user-agent
     res = requests.get(url, headers=header, timeout=10)
-    print('第%s轮·getlist2·下载图片· 第二网络状态码:' % i, res.status_code)
+    print('第%s轮，getlist2·下载图片· 第二网络状态码:' % i, res.status_code)
     pattern = re.compile('img data-src="(.*?)"', re.S)  # class="preview" href=
     result = pattern.findall(res.text)
     # print('result===', result)
@@ -222,7 +222,12 @@ def getlist4(url):
         pattern2 = re.compile(',"pubDateStr":"(.*?),"infoSource":"央视新闻app","sourceUrl":', re.S)  # 综合得分
         result2 = pattern2.findall(res.content.decode('utf-8'))
         # print(''.join(result2))
-        a = (str('\n'.join(result2))).replace('\\n', '')  # 替换\n
+        pattern3 = r'\\t|\\n| |[a-zA-z]|"|:|,|{|}'
+        # a = re.sub(pattern3, '', str('\n'.join(result2)), re.I)
+        a = re.sub(pattern3, '', str('\n'.join(result2)))
+        print(a)
+        # a = (str('\n'.join(result2))).replace('\\n', '')  # 替换\n
+        # a = a.replace('\\t', '')  # 替换\t
         # print(a)
         # print((''.join(result2)))
         # filename = os.getcwd()
