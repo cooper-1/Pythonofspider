@@ -14,15 +14,16 @@ i = 0
 location = r'D:\工具软件\python3.8\Python网络爬虫从入门到实践\agency' + '/fake_useragent_0.1.11.json'
 print(location)
 
+
 # ua = UserAgent(use_cache_server=False)
-def getlist(url):
+def getlist(url: str):
     # 获取列表URL
     try:
         global i
         i += 1
         start = time.time()
         session = HTMLSession()  # 创建HTML会话对象
-        header = {'Useragent': UserAgent(path=location,verify_ssl=False).random}
+        header = {'Useragent': UserAgent(path=location, verify_ssl=False).random}
         res = session.get(url, headers=header, timeout=20)
         res.encoding = 'gb2312'
         print('第 %s 次·网络状态码: ' % i, res.status_code)
