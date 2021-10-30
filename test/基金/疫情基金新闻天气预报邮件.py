@@ -102,7 +102,7 @@ def sendmail(result):
     smtper.login(sender, "SBMMBSAHCMPDUOWC")  # 此处secretpass输入授权码
 
     # 发送邮件，测试时注释掉
-    smtper.sendmail(sender, receivers, message.as_string())
+    # smtper.sendmail(sender, receivers, message.as_string())
     before = time.strptime(startTime, "%Y-%m-%d")
     today = datetime.date.today()
     print('开始时间是：' + startTime + " 现在时间是： " + ctime + ' 共计 %s 天。 ' % (
@@ -192,7 +192,7 @@ def getlist3(url):
             print('天气预报写入成功')
 
         # 爬取疫情新闻
-        epidemic = ''.join(getlist4('https://ncov.dxy.cn/ncovh5/view/pneumonia'))
+        epidemic = ''.join(getlist4())
         sendmail('<ul class="t clearfix">' + result[0] + '</ul>' + ''.join(epidemic))
 
     except HTTPError:
@@ -207,7 +207,7 @@ def getlist3(url):
         getlist3(url='http://www.weather.com.cn/weather/101281201.shtml')
 
 
-def getlist4(url):
+def getlist4(url='https://ncov.dxy.cn/ncovh5/view/pneumonia'):
     # 爬取疫情新闻数据
     try:
         global i
@@ -217,11 +217,13 @@ def getlist4(url):
         header = {'User-Agent': random.choice(user_agent_list)}  # 随机选一个user-agent
         res = requests.get(url, headers=header, timeout=10)
         print('第%s轮，getlist4·网络状态码:' % i, res.status_code)
-        # print(res.content)
+        print(res.content.decode('utf-8'))
 
-        pattern2 = re.compile(',"pubDateStr":"(.*?),"infoSource":"央视新闻app","sourceUrl":', re.S)  # 综合得分
+        # pattern2 = re.compile(',"pubDateStr":"(.*?),"infoSource":"央视新闻app","sourceUrl":', re.S)  # 综合得分
+        pattern2 = re.compile(r'window\.getAreaStat = (.*?)</script>', re.S)  # 综合得分
         result2 = pattern2.findall(res.content.decode('utf-8'))
         # print(''.join(result2))
+        print(result2[0])
         pattern3 = r'\\t|\\n| |[a-zA-z]|"|:|,|{|}'
         # a = re.sub(pattern3, '', str('\n'.join(result2)), re.I)
         a = re.sub(pattern3, '', str('\n'.join(result2)))
@@ -358,8 +360,8 @@ if __name__ == "__main__":
     schedule.every().day.at("15:03").do(getlist3, url)
 
     # 测试时使用，正式使用则注释掉
-    # getlist1()
-    # getlist3(url)
+    getlist1()
+    getlist3(url)
 
     while True:
         schedule.run_pending()
