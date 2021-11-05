@@ -7,5 +7,11 @@
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
       <jdbc-url>jdbc:sqlite:D:\工具软件\python3.8\Python网络爬虫从入门到实践\第6章\http_cache.sqlite</jdbc-url>
     </data-source>
+    <data-source source="LOCAL" name="Mrsofo" uuid="0b302bfe-314c-427c-b09d-9e0378a50aa7">
+      <driver-ref>sqlite.xerial</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
+      <jdbc-url>jdbc:sqlite:D:\工具软件\python3.8\Python网络爬虫从入门到实践\第12章\SQLite 数据库\Mrsofo.db</jdbc-url>
+    </data-source>
   </component>
 </project>
